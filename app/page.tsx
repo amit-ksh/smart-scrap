@@ -1,13 +1,13 @@
 "use client";
 
-import { Loader } from "@/components/icons";
+import { ClipboardIcon, DownloadIcon, Loader } from "@/components/icons";
 import { title } from "@/components/primitives";
 import { ThemeSwitch } from "@/components/theme-switch";
 import { Button, Input, Radio, RadioGroup } from "@nextui-org/react";
 import { FormEvent, useState } from "react";
 
 export default function Home() {
-  const [URL, setURL] = useState("https://subslikescript.com/movies");
+  const [url, setUrl] = useState("https://subslikescript.com/movies");
   const [attributes, setAttributes] = useState("");
   const [format, setFormat] = useState("json");
   const [apiKey, setApiKey] = useState("");
@@ -24,7 +24,7 @@ export default function Home() {
     const resp = await fetch("/api/scrape/", {
       method: "POST",
       body: JSON.stringify({
-        URL,
+        URL: url,
         attributes,
         format,
         apiKey,
@@ -38,11 +38,29 @@ export default function Home() {
   }
 
   function clear() {
-    setURL("");
+    setUrl("");
     setAttributes("");
     setFormat("");
     setApiKey("");
     setSelector("");
+  }
+
+  function downloadFile() {
+    if (!result) return;
+
+    const file = new File(result, `download.${format}`);
+    const url = URL.createObjectURL(file);
+
+    const link = document.createElement("a");
+    link.download = "true";
+    link.target = "_blank";
+    link.style.display = "none";
+    document.body.appendChild(link);
+    link.setAttribute("href", url);
+    link.click();
+
+    URL.revokeObjectURL(url);
+    link.remove();
   }
 
   return (
@@ -62,9 +80,9 @@ export default function Home() {
                 placeholder="e.g. https://google.com/"
                 isRequired
                 size="lg"
-                defaultValue={URL}
-                onChange={(e) => setURL(e.target.value)}
-                value={URL}
+                defaultValue={url}
+                onChange={(e) => setUrl(e.target.value)}
+                value={url}
               />
             </div>
             <div className="col-span-6 md:col-span-3">
@@ -121,9 +139,31 @@ export default function Home() {
             </div>
           </div>
         </form>
+
         <div className="">
           <div className="bg-[#f4f4f5] dark:bg-zinc-900 p-3 rounded-xl">
-            <h2 className="text-lg">Output</h2>
+            <div className="flex items-center justify-between">
+              <h2 className="text-lg">Output</h2>
+              <div className="space-x-3">
+                <Button
+                  className="p-2 min-w-[50px]"
+                  isDisabled={!result}
+                  aria-label={`copy ${format} content`}
+                  onClick={() => navigator.clipboard.writeText(result ?? "")}
+                >
+                  <ClipboardIcon size={16} />
+                </Button>
+                <Button
+                  className="p-2 min-w-[50px]"
+                  isDisabled={!result}
+                  aria-label={`download ${format} content`}
+                  onClick={downloadFile}
+                >
+                  <DownloadIcon size={16} />
+                </Button>
+              </div>
+            </div>
+
             <div className="relative h-[50vh] mt-2 border-1 border-zinc-400 rounded-lg">
               <div className="overflow-y-auto h-full rounded-lg">
                 {JSON.stringify(result)}

@@ -4,7 +4,7 @@ import invokeOpenAI from "./openai";
 
 export const POST = async (req: NextRequest) => {
   const body = await req.json();
-  const { URL, selector } = body;
+  const { URL, selector, format } = body;
 
   let response, html;
 
@@ -29,6 +29,7 @@ export const POST = async (req: NextRequest) => {
   }
 
   return Response.json({
+    format,
     data: response,
   });
 };
