@@ -1,18 +1,29 @@
 import { NextRequest } from "next/server";
 import { scraper } from "./scraper";
+import invokeOpenAI from "./openai";
 
 export const POST = async (req: NextRequest) => {
   const body = await req.json();
-  const { URL, part, format, apiKey, selector } = body;
+  const { URL, selector } = body;
 
-  let response;
+  let response, html;
 
   try {
-    const scrapedData = await scraper(URL, selector);
-    response = scrapedData;
+    html = await scraper(URL, selector);
   } catch (error) {
     return Response.json(
       { error: "Error while fetching webpage" },
+      { status: 400 }
+    );
+  }
+
+  try {
+    response = invokeOpenAI({ ...body });
+    console.log(response);
+  } catch (error) {
+    console.error(error);
+    return Response.json(
+      { error: "Server Error! Try agian later." },
       { status: 400 }
     );
   }
