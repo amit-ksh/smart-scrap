@@ -9,6 +9,11 @@ import { FormEvent, useState } from "react";
 
 type DataFormat = keyof typeof mimeTypes;
 
+type APIResponse = {
+  data: any;
+  format: DataFormat;
+};
+
 export default function Home() {
   const [url, setUrl] = useState<string>("https://subslikescript.com/movies");
   const [attributes, setAttributes] = useState<string>("");
@@ -16,7 +21,7 @@ export default function Home() {
   const [apiKey, setApiKey] = useState<string>("");
   const [selector, setSelector] = useState<string>("");
 
-  const [result, setResult] = useState('{"name": "Amit"}');
+  const [result, setResult] = useState<APIResponse>();
 
   const [loading, setLoading] = useState(false);
 
@@ -52,9 +57,13 @@ export default function Home() {
 
     console.log(`download.${format}`);
 
-    const file = new File([result], `download.${format}`, {
-      type: mimeTypes[format],
-    });
+    const file = new File(
+      [JSON.stringify(result!?.data)],
+      `download.${format}`,
+      {
+        type: mimeTypes[format],
+      }
+    );
     const url = URL.createObjectURL(file);
 
     console.log(url);
@@ -141,8 +150,6 @@ export default function Home() {
                 isRequired
                 onChange={(e) => setApiKey(e.target.value)}
                 value={apiKey}
-                minLength={64}
-                maxLength={64}
               />
             </div>
           </div>
@@ -157,7 +164,7 @@ export default function Home() {
                   className="p-2 min-w-[50px]"
                   isDisabled={!result}
                   aria-label={`copy ${format} content`}
-                  onClick={() => navigator.clipboard.writeText(result ?? "")}
+                  onClick={() => navigator.clipboard.writeText(result!?.data)}
                 >
                   <ClipboardIcon size={16} />
                 </Button>
@@ -174,7 +181,7 @@ export default function Home() {
 
             <div className="relative h-[50vh] mt-2 border-1 border-zinc-400 rounded-lg">
               <div className="overflow-y-auto h-full rounded-lg">
-                {JSON.stringify(result)}
+                {JSON.stringify(result!?.data)}
               </div>
             </div>
           </div>

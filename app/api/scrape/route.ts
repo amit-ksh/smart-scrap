@@ -18,7 +18,7 @@ export const POST = async (req: NextRequest) => {
   }
 
   try {
-    response = invokeOpenAI({ ...body });
+    response = await invokeOpenAI({ ...body });
     console.log(response);
   } catch (error) {
     console.error(error);
@@ -30,6 +30,6 @@ export const POST = async (req: NextRequest) => {
 
   return Response.json({
     format,
-    data: response,
+    data: response.choices[0].message.content,
   });
 };
