@@ -3,17 +3,20 @@
 import { ClipboardIcon, DownloadIcon, Loader } from "@/components/icons";
 import { title } from "@/components/primitives";
 import { ThemeSwitch } from "@/components/theme-switch";
+import mimeTypes from "@/constants/mimeTypes";
 import { Button, Input, Radio, RadioGroup } from "@nextui-org/react";
 import { FormEvent, useState } from "react";
 
-export default function Home() {
-  const [url, setUrl] = useState("https://subslikescript.com/movies");
-  const [attributes, setAttributes] = useState("");
-  const [format, setFormat] = useState("json");
-  const [apiKey, setApiKey] = useState("");
-  const [selector, setSelector] = useState("");
+type DataFormat = keyof typeof mimeTypes;
 
-  const [result, setResult] = useState();
+export default function Home() {
+  const [url, setUrl] = useState<string>("https://subslikescript.com/movies");
+  const [attributes, setAttributes] = useState<string>("");
+  const [format, setFormat] = useState<DataFormat>("json");
+  const [apiKey, setApiKey] = useState<string>("");
+  const [selector, setSelector] = useState<string>("");
+
+  const [result, setResult] = useState('{"name": "Amit"}');
 
   const [loading, setLoading] = useState(false);
 
@@ -40,7 +43,6 @@ export default function Home() {
   function clear() {
     setUrl("");
     setAttributes("");
-    setFormat("");
     setApiKey("");
     setSelector("");
   }
@@ -48,11 +50,17 @@ export default function Home() {
   function downloadFile() {
     if (!result) return;
 
-    const file = new File(result, `download.${format}`);
+    console.log(`download.${format}`);
+
+    const file = new File([result], `download.${format}`, {
+      type: mimeTypes[format],
+    });
     const url = URL.createObjectURL(file);
 
+    console.log(url);
+
     const link = document.createElement("a");
-    link.download = "true";
+    link.download = "smart-scrap-file";
     link.target = "_blank";
     link.style.display = "none";
     document.body.appendChild(link);
@@ -113,7 +121,7 @@ export default function Home() {
                 isRequired
                 orientation="horizontal"
                 className="bg-[#f4f4f5] dark:bg-[#27272a] rounded-xl p-2"
-                onChange={(e) => setFormat(e.target.value)}
+                onChange={(e) => setFormat(e.target.value as DataFormat)}
                 value={format}
               >
                 <Radio value="json" size="sm">
