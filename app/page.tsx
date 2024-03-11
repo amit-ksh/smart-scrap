@@ -1,5 +1,6 @@
 "use client";
 
+import { Loader } from "@/components/icons";
 import { title } from "@/components/primitives";
 import { ThemeSwitch } from "@/components/theme-switch";
 import { Button, Input, Radio, RadioGroup } from "@nextui-org/react";
@@ -7,21 +8,24 @@ import { FormEvent, useState } from "react";
 
 export default function Home() {
   const [URL, setURL] = useState("https://subslikescript.com/movies");
-  const [part, setPart] = useState("");
+  const [attributes, setAttributes] = useState("");
   const [format, setFormat] = useState("json");
   const [apiKey, setApiKey] = useState("");
   const [selector, setSelector] = useState("");
 
   const [result, setResult] = useState();
 
+  const [loading, setLoading] = useState(false);
+
   async function submit(e: FormEvent) {
     e.preventDefault();
 
+    setLoading(true);
     const resp = await fetch("/api/scrape/", {
       method: "POST",
       body: JSON.stringify({
         URL,
-        part,
+        attributes,
         format,
         apiKey,
         selector,
@@ -30,11 +34,12 @@ export default function Home() {
     const data = await resp.json();
 
     setResult(data);
+    setLoading(false);
   }
 
   function clear() {
     setURL("");
-    setPart("");
+    setAttributes("");
     setFormat("");
     setApiKey("");
     setSelector("");
@@ -52,7 +57,7 @@ export default function Home() {
           <div className="grid grid-cols-6 gap-4">
             <div className="col-span-6 md:col-span-3">
               <Input
-                type="text"
+                type="url"
                 label="Enter a webpage URL to scrape"
                 placeholder="e.g. https://google.com/"
                 isRequired
@@ -69,8 +74,8 @@ export default function Home() {
                 placeholder="movie title"
                 isRequired
                 size="lg"
-                onChange={(e) => setPart(e.target.value)}
-                value={part}
+                onChange={(e) => setAttributes(e.target.value)}
+                value={attributes}
               />
             </div>
             <div className="col-span-6 sm:col-span-3 lg:col-span-2">
@@ -88,12 +93,16 @@ export default function Home() {
                 label="What format would you like the data in?"
                 defaultValue="json"
                 isRequired
-                className="bg-[#27272a] rounded-xl p-2"
+                orientation="horizontal"
+                className="bg-[#f4f4f5] dark:bg-[#27272a] rounded-xl p-2"
                 onChange={(e) => setFormat(e.target.value)}
                 value={format}
               >
                 <Radio value="json" size="sm">
                   JSON
+                </Radio>
+                <Radio value="csv" size="sm">
+                  CSV
                 </Radio>
               </RadioGroup>
             </div>
@@ -106,12 +115,14 @@ export default function Home() {
                 isRequired
                 onChange={(e) => setApiKey(e.target.value)}
                 value={apiKey}
+                minLength={64}
+                maxLength={64}
               />
             </div>
           </div>
         </form>
         <div className="">
-          <div className="bg-zinc-900 p-3 rounded-xl">
+          <div className="bg-[#f4f4f5] dark:bg-zinc-900 p-3 rounded-xl">
             <h2 className="text-lg">Output</h2>
             <div className="relative h-[50vh] mt-2 border-1 border-zinc-400 rounded-lg">
               <div className="overflow-y-auto h-full rounded-lg">
@@ -124,7 +135,8 @@ export default function Home() {
         <div className="flex flex-col md:flex-row gap-4">
           <Button
             onClick={clear}
-            className="w-full bg-zinc-900 font-semibold tracking-wide text-lg"
+            className="w-full bg-[#f4f4f5] dark:bg-zinc-900 font-semibold tracking-wide text-lg"
+            isDisabled={loading}
           >
             Clear
           </Button>
@@ -132,8 +144,10 @@ export default function Home() {
             formTarget="form"
             form="form"
             type="submit"
-            className="w-full bg-zinc-900 font-semibold tracking-wide text-lg"
+            className="w-full bg-[#f4f4f5] dark:bg-zinc-900 font-semibold tracking-wide text-lg"
+            isDisabled={loading}
           >
+            {loading ? <Loader size={24} className="animate-spin" /> : null}
             Submit
           </Button>
         </div>
