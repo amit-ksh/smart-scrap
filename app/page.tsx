@@ -6,15 +6,30 @@ import { Button, Input, Radio, RadioGroup } from "@nextui-org/react";
 import { FormEvent, useState } from "react";
 
 export default function Home() {
-  const [URL, setURL] = useState("");
+  const [URL, setURL] = useState("https://subslikescript.com/movies");
   const [part, setPart] = useState("");
   const [format, setFormat] = useState("json");
   const [apiKey, setApiKey] = useState("");
   const [selector, setSelector] = useState("");
 
+  const [result, setResult] = useState();
+
   async function submit(e: FormEvent) {
     e.preventDefault();
-    console.log(URL, part, format, apiKey, selector);
+
+    const resp = await fetch("/api/scrape/", {
+      method: "POST",
+      body: JSON.stringify({
+        URL,
+        part,
+        format,
+        apiKey,
+        selector,
+      }),
+    });
+    const data = await resp.json();
+
+    setResult(data);
   }
 
   function clear() {
@@ -42,7 +57,9 @@ export default function Home() {
                 placeholder="e.g. https://google.com/"
                 isRequired
                 size="lg"
+                defaultValue={URL}
                 onChange={(e) => setURL(e.target.value)}
+                value={URL}
               />
             </div>
             <div className="col-span-6 md:col-span-3">
@@ -53,6 +70,7 @@ export default function Home() {
                 isRequired
                 size="lg"
                 onChange={(e) => setPart(e.target.value)}
+                value={part}
               />
             </div>
             <div className="col-span-6 sm:col-span-3 lg:col-span-2">
@@ -62,6 +80,7 @@ export default function Home() {
                 placeholder="movie title"
                 size="lg"
                 onChange={(e) => setSelector(e.target.value)}
+                value={selector}
               />
             </div>
             <div className="col-span-6 sm:col-span-3 lg:col-span-2">
@@ -71,6 +90,7 @@ export default function Home() {
                 isRequired
                 className="bg-[#27272a] rounded-xl p-2"
                 onChange={(e) => setFormat(e.target.value)}
+                value={format}
               >
                 <Radio value="json" size="sm">
                   JSON
@@ -85,6 +105,7 @@ export default function Home() {
                 size="lg"
                 isRequired
                 onChange={(e) => setApiKey(e.target.value)}
+                value={apiKey}
               />
             </div>
           </div>
@@ -93,7 +114,9 @@ export default function Home() {
           <div className="bg-zinc-900 p-3 rounded-xl">
             <h2 className="text-lg">Output</h2>
             <div className="relative h-[50vh] mt-2 border-1 border-zinc-400 rounded-lg">
-              <div className="">JSON</div>
+              <div className="overflow-y-auto h-full rounded-lg">
+                {JSON.stringify(result)}
+              </div>
             </div>
           </div>
         </div>
