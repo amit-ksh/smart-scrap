@@ -1,20 +1,15 @@
+import { ScrapingFormInput } from "@/types";
 import { OpenAI } from "openai";
 
-interface Input {
-  URL: string;
-  html: string;
-  attributes: string;
-  format: string;
-  apiKey: string;
-}
+type OpenAIInput = Omit<ScrapingFormInput, "selector"> & { html: string };
 
 export default async function invokeOpenAI({
-  URL,
+  url,
   html,
   attributes,
   format,
   apiKey,
-}: Input) {
+}: OpenAIInput) {
   const openai = new OpenAI({ apiKey });
 
   const resp = await openai.chat.completions.create({
@@ -23,7 +18,7 @@ export default async function invokeOpenAI({
     messages: [
       {
         role: "user",
-        content: createPrompt({ URL, html, attributes, format }),
+        content: createPrompt({ url, html, attributes, format }),
       },
     ],
   });
@@ -32,18 +27,18 @@ export default async function invokeOpenAI({
 }
 
 export const createPrompt = ({
-  URL,
+  url,
   html,
   attributes,
   format,
-}: Omit<Input, "apiKey">) =>
+}: Omit<OpenAIInput, "apiKey">) =>
   `
       Extract the below-given attributes present inside the HTML scraped from a webpage and create a valid ${format.toUpperCase()} object from that.
   
       ATTRIBUTES TO EXTRACT: 
       ${attributes}
       
-      WEB PAGE URL: ${URL}
+      WEB PAGE URL: ${url}
   
       HTML: ${html}
       

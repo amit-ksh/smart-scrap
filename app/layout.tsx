@@ -4,6 +4,8 @@ import { siteConfig } from "@/config/site";
 import { fontSans } from "@/config/fonts";
 import { Providers } from "./providers";
 import clsx from "clsx";
+import { ThemeSwitch } from "@/components/theme-switch";
+import { title } from "@/components/primitives";
 
 export const metadata: Metadata = {
   title: {
@@ -37,7 +39,12 @@ export default function RootLayout({
         )}
       >
         <Providers themeProps={{ attribute: "class", defaultTheme: "dark" }}>
-          {children}
+          <header className="flex items-center justify-between gap-4 py-4 px-6 border-b-2 border-zinc-400">
+            <h1 className={title({ size: "sm" })}>Smart Scrap</h1>
+            <ThemeSwitch />
+          </header>
+
+          <main className="m-6 space-y-6">{children}</main>
         </Providers>
       </body>
     </html>
