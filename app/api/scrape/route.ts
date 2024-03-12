@@ -10,18 +10,21 @@ export const POST = async (req: NextRequest) => {
 
   try {
     html = await scraper(URL, selector);
-  } catch (error) {
+  } catch (err) {
+    console.log(err);
     return Response.json(
       { error: "Error while fetching webpage" },
       { status: 400 }
     );
   }
 
+  if (!html) return Response.json({ error: "No HTML found." }, { status: 400 });
+
   try {
-    response = await invokeOpenAI({ ...body });
+    response = await invokeOpenAI({ ...body, html });
     console.log(response);
-  } catch (error) {
-    console.error(error);
+  } catch (err) {
+    console.error(err);
     return Response.json(
       { error: "Server Error! Try agian later." },
       { status: 400 }

@@ -59,14 +59,12 @@ export default function Home() {
 
     const file = new File(
       [JSON.stringify(result!?.data)],
-      `download.${format}`,
+      `download.${result.format}`,
       {
         type: mimeTypes[format],
       }
     );
     const url = URL.createObjectURL(file);
-
-    console.log(url);
 
     const link = document.createElement("a");
     link.download = "smart-scrap-file";
@@ -180,7 +178,7 @@ export default function Home() {
             </div>
 
             <div className="relative h-[50vh] mt-2 border-1 border-zinc-400 rounded-lg">
-              <div className="overflow-y-auto h-full rounded-lg">
+              <div className="overflow-y-auto h-full rounded-lg p-1">
                 {JSON.stringify(result!?.data)}
               </div>
             </div>
