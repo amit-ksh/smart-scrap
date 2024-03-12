@@ -57,13 +57,9 @@ export default function Home() {
 
     console.log(`download.${format}`);
 
-    const file = new File(
-      [JSON.stringify(result!?.data)],
-      `download.${result.format}`,
-      {
-        type: mimeTypes[format],
-      }
-    );
+    const file = new File([result!?.data], `download.${result.format}`, {
+      type: mimeTypes[format],
+    });
     const url = URL.createObjectURL(file);
 
     const link = document.createElement("a");
@@ -162,7 +158,7 @@ export default function Home() {
                   className="p-2 min-w-[50px]"
                   isDisabled={!result}
                   aria-label={`copy ${format} content`}
-                  onClick={() => navigator.clipboard.writeText(result!?.data)}
+                  onClick={() => navigator.clipboard.writeText(result?.data)}
                 >
                   <ClipboardIcon size={16} />
                 </Button>
