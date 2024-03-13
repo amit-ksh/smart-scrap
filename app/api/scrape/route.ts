@@ -10,6 +10,7 @@ export const POST = async (req: NextRequest) => {
 
   try {
     html = await scraper(url, selector);
+    return NextResponse.json({ data: html, format });
   } catch (err) {
     console.error(err);
     return NextResponse.json(

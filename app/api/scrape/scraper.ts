@@ -1,13 +1,17 @@
-import axios from "axios";
-import * as cheerio from "cheerio";
+import playwright from "playwright";
 
 export async function scraper(url: string, selector: string) {
   selector = selector ?? "html";
 
-  const html = await axios.get(url);
-  const $ = cheerio.load(html.data);
+  const browser = await playwright.chromium.launch({ headless: true });
+  const context = await browser.newContext();
+  const page = await context.newPage();
 
-  const HTMLContent = $(selector).html()?.replace(/\n|\t/g, "") || "";
+  await page.goto(url);
 
-  return HTMLContent;
+  const result = await page.innerHTML(selector);
+
+  await browser.close();
+
+  return result.replace(/\n|\t/g, "");
 }
