@@ -1,8 +1,7 @@
 "use client";
 
 import { ThemeSwitch } from "./theme-switch";
-import { UserButton } from "@clerk/nextjs";
-import { dark } from "@clerk/themes";
+
 import { title } from "./primitives";
 import { useTheme } from "next-themes";
 
@@ -14,9 +13,6 @@ function Header() {
       <h1 className={title({ size: "sm" })}>Smart Scrap</h1>
       <div className="flex gap-4">
         <ThemeSwitch />
-        <UserButton
-          appearance={{ baseTheme: theme == "dark" ? dark : undefined }}
-        />
       </div>
     </header>
   );
