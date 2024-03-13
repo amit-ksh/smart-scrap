@@ -11,29 +11,28 @@ export const POST = async (req: NextRequest) => {
   try {
     html = await scraper(url, selector);
   } catch (err) {
-    console.log(err);
+    console.error(err);
     return Response.json(
       { error: "Error while fetching webpage" },
       { status: 400 }
     );
   }
 
-  if (!html) return Response.json({ error: "No HTML found." }, { status: 400 });
+  if (!html)
+    return Response.json({ error: "No content found." }, { status: 400 });
 
-  response = html;
-  // try {
-  //   response = await invokeOpenAI({ ...body, html });
-  //   console.log(response);
-  // } catch (err) {
-  //   console.error(err);
-  //   return Response.json(
-  //     { error: "Server Error! Try agian later." },
-  //     { status: 400 }
-  //   );
-  // }
+  try {
+    response = await invokeOpenAI({ ...body, html });
+  } catch (err) {
+    console.error(err);
+    return Response.json(
+      { error: "Server Error! Try agian later." },
+      { status: 400 }
+    );
+  }
 
   return Response.json({
     format,
-    data: response,
+    data: response.choices[0].message.content,
   });
 };

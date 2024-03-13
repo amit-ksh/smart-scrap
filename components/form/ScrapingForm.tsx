@@ -23,7 +23,7 @@ function ScrapingForm(props: ScrapingFormProps) {
 
     setLoading(true);
 
-    props.onFormSubmit({ url, attributes, format, apiKey, selector });
+    await props.onFormSubmit({ url, attributes, format, apiKey, selector });
 
     setLoading(false);
   }
@@ -34,6 +34,7 @@ function ScrapingForm(props: ScrapingFormProps) {
     setApiKey("");
     setSelector("");
   }
+
   return (
     <>
       <form id={props.formId} onSubmit={submit} className="order-1">
@@ -65,7 +66,7 @@ function ScrapingForm(props: ScrapingFormProps) {
             <Input
               type="text"
               label="Enter a CSS selector to scrape (optional)"
-              placeholder="movie title"
+              placeholder="CSS selector"
               size="lg"
               onChange={(e) => setSelector(e.target.value)}
               value={selector}

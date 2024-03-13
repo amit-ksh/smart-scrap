@@ -17,8 +17,9 @@ export default function Home() {
       method: "POST",
       body: JSON.stringify(formInput),
     });
+
     const data = await resp.json();
-    setResult({ data, format: formInput.format });
+    setResult(data);
   }
 
   return (
